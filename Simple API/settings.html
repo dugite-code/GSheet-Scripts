@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+
+  <script>
+  // Prevent forms from submitting.
+  function preventFormSubmit() {
+    var forms = document.querySelectorAll('form');
+    for (var i = 0; i < forms.length; i++) {
+      forms[i].addEventListener('submit', function(event) {
+        event.preventDefault();
+      });
+    }
+  }
+  window.addEventListener('load', preventFormSubmit);
+
+  document.addEventListener("DOMContentLoaded", function(event) {
+    get_settings();
+  });
+
+  function get_settings(){
+    google.script.run.withSuccessHandler(set_settings).settings_load();
+  }
+  function set_settings(settings){
+    if(settings != undefined){
+      document.getElementById('Sheet_Name').value = settings[0];
+      document.getElementById('Data_Row').value = settings[1];
+      document.getElementById('Data_Column').value = settings[2];
+      document.getElementById('Row_Number').value = settings[3];
+      document.getElementById('Column_Number').value = settings[4];
+    }
+  }
+  function settings_submit(){
+    var API_Key = document.getElementById('API_Key').value;
+    var Sheet_Name = document.getElementById('Sheet_Name').value;
+    var Data_Column = document.getElementById('Data_Column').value;
+    var Data_Row = document.getElementById('Data_Row').value;
+    var Column_Number = document.getElementById('Column_Number').value;
+    var Row_Number = document.getElementById('Row_Number').value;
+
+    google.script.run.settings_save(API_Key,Sheet_Name,Data_Row,Data_Column,Row_Number,Column_Number);
+    setTimeout(google.script.host.close, 3000);
+  }
+  </script>
+</head>
+<body>
+  <form style="width:95%" onsubmit="settings_submit();">
+    <table style="width:100%">
+      <tr>
+        <th><label for="API_Key">API Key</label></th>
+        <th><label for="Sheet_Name">Sheet Name</label></th>
+      </tr>
+      <tr>
+        <th><input id="API_Key" type="password"></th>
+        <th><input id="Sheet_Name" type="text"></th>
+      </tr>
+    </table>
+    <br>
+    <table style="width:100%;">
+      <tr>
+        <th><label for="Data_Column">Data Column</label></th>
+        <th><label for="Data_Row">Data Row</label></th>
+      </tr>
+      <tr>
+        <th><input id="Data_Column" type="text"></th>
+        <th><input id="Data_Row" type="text"></th>
+      </tr>
+    </table>
+    <br>
+    <table style="width:100%">
+      <tr>
+        <th><label for="Column_Number">Number of Columns</label></th>
+        <th><label for="Row_Number">Number of Rows</label></th>
+      </tr>
+      <tr>
+        <th><input id="Column_Number" type="text"></th>
+        <th><input id="Row_Number" type="text"></th>
+      </tr>
+    </table>
+    <br>
+    <br>
+    <br>
+    <button type="submit">Submit
+    </button>
+  </form>
+</body>
+</html>
