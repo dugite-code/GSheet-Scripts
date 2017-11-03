@@ -99,7 +99,7 @@ function doGet(data) {
               csv += sheet_data[row];
             }
           }
-          return ContentService.createTextOutput(csv)
+          return ContentService.createTextOutput(csv).setMimeType(ContentService.MimeType.CSV)
         }
         return ContentService.createTextOutput('Error: No data found');
       }
