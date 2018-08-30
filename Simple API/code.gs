@@ -31,14 +31,43 @@ function SHA512(input) {//https://pthree.org/2016/02/26/digest-algorithms-in-goo
   return hexstr;
 }
 
+function checksheet(optSheetName){
+  var sheetName = optSheetName || "Simple API";
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheets = call_(function() {return ss.getSheets();});
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].getName() === sheetName) {
+      sheet_ = sheets[i];
+      return;
+    }
+  }
+  sheet_ = ss.insertSheet(sheetName, i);
+  sheet_.getRange(1,1).setValue("Simple API - Auto Created Sheet");
+  sheet_.setFrozenRows(1);
+}
+
 function settings_save(api_key,sheet_name,data_row,data_column,row_number,column_number){
   var DocumentProperties = PropertiesService.getDocumentProperties();
-  DocumentProperties.setProperty('API_Key', SHA512(api_key));
-  DocumentProperties.setProperty('Sheet_Name', sheet_name);
-  DocumentProperties.setProperty('Data_Row', data_row);
-  DocumentProperties.setProperty('Data_Column', data_column);
-  DocumentProperties.setProperty('Row_Number', row_number);
-  DocumentProperties.setProperty('Column_Number', column_number);
+  var Curr_API_Key = DocumentProperties.getProperty('API_Key');
+  if(api_key){
+    DocumentProperties.setProperty('API_Key', SHA512(api_key));
+  } else if(!Curr_API_Key) {
+    var message = "Error No API KEY Set";
+    ui.alert(message);
+  }
+  if(sheet_name && data_row && data_column && row_number && column_number){
+    checksheet(sheet_name);
+    DocumentProperties.setProperty('Sheet_Name', sheet_name);
+    DocumentProperties.setProperty('Data_Row', data_row);
+    DocumentProperties.setProperty('Data_Column', data_column);
+    DocumentProperties.setProperty('Row_Number', row_number);
+    DocumentProperties.setProperty('Column_Number', column_number);
+    var message = "Settings saved";
+    ui.alert(message);
+  } else {
+    var message = "Error One Or More Required Variables Are Not Set";
+  }
+
 }
 
 function settings_load(){
@@ -64,15 +93,16 @@ function settings_del(){
 
 function doGet(data) {
   if(data){
-    if (data.parameters["key"] !== undefined){
+    if (data.parameters["key"] !== null){
       var sub_key = SHA512(data.parameters["key"][0])
       var DocumentProperties = PropertiesService.getDocumentProperties();
       var API_Key = DocumentProperties.getProperty('API_Key');
       if(sub_key !== API_Key){
-        return ContentService.createTextOutput('Error: Invalid API Key');
+        return ContentService.createTextOutput('Error: Unauthorised');
       }else if(sub_key == API_Key){
         var ss = SpreadsheetApp.getActiveSpreadsheet();
         var sheet_name = DocumentProperties.getProperty('Sheet_Name');
+        checksheet(sheet_name);
         var source_sheet = ss.getSheetByName(sheet_name); // Get the required spreadsheet
         var data_row = DocumentProperties.getProperty('Data_Row');
         var data_col = DocumentProperties.getProperty('Data_Column');
