@@ -29,6 +29,10 @@
       document.getElementById('Data_Column').value = settings[2];
       document.getElementById('Row_Number').value = settings[3];
       document.getElementById('Column_Number').value = settings[4];
+      if(settings[5] == "true"){
+        document.getElementById('logging').checked = settings[5];
+      }
+      document.getElementById('log_level').value = settings[6];
     }
   }
   function settings_submit(){
@@ -38,8 +42,10 @@
     var Data_Row = document.getElementById('Data_Row').value;
     var Column_Number = document.getElementById('Column_Number').value;
     var Row_Number = document.getElementById('Row_Number').value;
+    var logging = document.getElementById('logging').checked;
+    var log_level = document.getElementById('log_level').value
 
-    google.script.run.settings_save(API_Key,Sheet_Name,Data_Row,Data_Column,Row_Number,Column_Number);
+    google.script.run.settings_save(API_Key,Sheet_Name,Data_Row,Data_Column,Row_Number,Column_Number,logging,log_level);
     setTimeout(google.script.host.close, 3000);
   }
   </script>
@@ -79,7 +85,29 @@
       </tr>
     </table>
     <br>
-    <br>
+    <table style="width:100%">
+      <tr>
+        <th>
+          <span>Logging</span>
+          <div>
+            <div>
+              <input id="logging" type="checkbox" class="active">
+              <label for="logging">Enable logging</label>
+            </div>
+            <div>
+              <select id="log_level" required>
+                <option value="INFO" selected>INFO</option>
+                <option value="SEVERE">SEVERE</option>
+                <option value="WARNING">WARNING</option>
+                <option value="WARNING">CONFIG</option>
+                <option value="ALL">DEBUG</option>
+              </select>
+              <label for="log_level">Logging Level</label>
+            </div>
+          </div>
+        </th>
+      </tr>
+    </table>
     <br>
     <button type="submit">Submit
     </button>

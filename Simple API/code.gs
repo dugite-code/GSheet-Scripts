@@ -16,7 +16,7 @@ function onOpen(e) {
 function settings_ui() {
   //Open html modal Dialog
   var html = HtmlService.createTemplateFromFile('settings')
-      .evaluate();
+      .evaluate().setHeight(325);
   SpreadsheetApp.getUi() // Or DocumentApp or FormApp.
   .showModalDialog(html, 'Settings');
 }
@@ -46,7 +46,7 @@ function checksheet(optSheetName){
   sheet_.setFrozenRows(1);
 }
 
-function settings_save(api_key,sheet_name,data_row,data_column,row_number,column_number){
+function settings_save(api_key,sheet_name,data_row,data_column,row_number,column_number,logging,log_level){
   var DocumentProperties = PropertiesService.getDocumentProperties();
   var Curr_API_Key = DocumentProperties.getProperty('API_Key');
   if(api_key){
@@ -55,13 +55,19 @@ function settings_save(api_key,sheet_name,data_row,data_column,row_number,column
     var message = "Error No API KEY Set";
     ui.alert(message);
   }
-  if(sheet_name && data_row && data_column && row_number && column_number){
+  if(sheet_name && data_row && data_column && row_number && column_number && log_level){
     checksheet(sheet_name);
     DocumentProperties.setProperty('Sheet_Name', sheet_name);
     DocumentProperties.setProperty('Data_Row', data_row);
     DocumentProperties.setProperty('Data_Column', data_column);
     DocumentProperties.setProperty('Row_Number', row_number);
     DocumentProperties.setProperty('Column_Number', column_number);
+    if(logging){
+      DocumentProperties.setProperty('api_logging',"True");
+    } else {
+      DocumentProperties.setProperty('api_logging',"False");
+    }
+    DocumentProperties.setProperty('log_level',log_level);
     var message = "Settings saved";
     ui.alert(message);
   } else {
@@ -77,18 +83,26 @@ function settings_load(){
   var data_column = DocumentProperties.getProperty('Data_Column');
   var row_number = DocumentProperties.getProperty('Row_Number');
   var column_number = DocumentProperties.getProperty('Column_Number');
+  var logging = DocumentProperties.getProperty('api_logging');
+  var log_level = DocumentProperties.getProperty('log_level');
 
-  return [sheet_name,data_row,data_column,row_number,column_number];
+  return [sheet_name,data_row,data_column,row_number,column_number,logging,log_level];
 }
 
 function settings_del(){
-  var DocumentProperties = PropertiesService.getDocumentProperties();
-  DocumentProperties.deleteProperty('API_Key');
-  DocumentProperties.deleteProperty('Sheet_Name');
-  DocumentProperties.deleteProperty('Data_Row');
-  DocumentProperties.deleteProperty('Data_Column');
-  DocumentProperties.deleteProperty('Row_Number');
-  DocumentProperties.deleteProperty('Column_Number');
+  var ui = SpreadsheetApp.getUi();
+  var response = ui.alert('Delete API settings', 'Are you sure you want to delete this?', ui.ButtonSet.YES_NO);
+  if(response == ui.Button.YES){
+    var DocumentProperties = PropertiesService.getDocumentProperties();
+    DocumentProperties.deleteProperty('API_Key');
+    DocumentProperties.deleteProperty('Sheet_Name');
+    DocumentProperties.deleteProperty('Data_Row');
+    DocumentProperties.deleteProperty('Data_Column');
+    DocumentProperties.deleteProperty('Row_Number');
+    DocumentProperties.deleteProperty('Column_Number');
+    DocumentProperties.deleteProperty('api_logging');
+    DocumentProperties.deleteProperty('log_level');
+  }
 }
 
 function doGet(data) {
