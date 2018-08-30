@@ -14,4 +14,4 @@
   * doPost
   * json Return
   * Integrate [BetterLog](https://github.com/peterherrmann/BetterLog)
-  * Add Logging options to Settings Dialogue
+  * Add Logging to the script
