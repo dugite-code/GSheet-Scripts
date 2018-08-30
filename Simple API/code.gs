@@ -64,12 +64,13 @@ function settings_del(){
 
 function doGet(data) {
   if(data){
-    if (data.parameters.key !== undefined){
+    if (data.parameters["key"] !== undefined){
+      var sub_key = SHA512(data.parameters["key"][0])
       var DocumentProperties = PropertiesService.getDocumentProperties();
       var API_Key = DocumentProperties.getProperty('API_Key');
-      if(SHA512(data.parameters.key[0]) !== API_Key){
+      if(sub_key !== API_Key){
         return ContentService.createTextOutput('Error: Invalid API Key');
-      }else if(data.parameters.key[0] == API_Key){
+      }else if(sub_key == API_Key){
         var ss = SpreadsheetApp.getActiveSpreadsheet();
         var sheet_name = DocumentProperties.getProperty('Sheet_Name');
         var source_sheet = ss.getSheetByName(sheet_name); // Get the required spreadsheet
