@@ -29,10 +29,12 @@
       document.getElementById('Data_Column').value = settings[2];
       document.getElementById('Row_Number').value = settings[3];
       document.getElementById('Column_Number').value = settings[4];
-      if(settings[5] == "true"){
+      if(settings[5] == "True"){
         document.getElementById('logging').checked = settings[5];
       }
-      document.getElementById('log_level').value = settings[6];
+      if(settings[6] !== null){
+        document.getElementById('log_level').value = settings[6];
+      }
     }
   }
   function settings_submit(){

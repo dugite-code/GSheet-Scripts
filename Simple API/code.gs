@@ -47,6 +47,7 @@ function checksheet(optSheetName){
 }
 
 function settings_save(api_key,sheet_name,data_row,data_column,row_number,column_number,logging,log_level){
+  var ui = SpreadsheetApp.getUi();
   var DocumentProperties = PropertiesService.getDocumentProperties();
   var Curr_API_Key = DocumentProperties.getProperty('API_Key');
   if(api_key){
