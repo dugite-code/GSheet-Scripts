@@ -127,7 +127,7 @@ function doGet(data) {
         // A value of 1, 1, 3, 3 selects A1:C3
 
         // Build a comma seperated list source https://www.drzon.net/posts/export-all-google-sheets-to-csv/
-        if (sheet_data.length > 1) {
+        if (sheet_data.length >= 1) {
           var csv = "";
           for (var row = 0; row < sheet_data.length; row++) {
             for (var col = 0; col < sheet_data[row].length; col++) {
